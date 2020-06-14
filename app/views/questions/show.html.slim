@@ -1,0 +1,34 @@
+h1= @question.title
+p= @question.body
+
+.subscription
+  - if current_user.present?
+    = render 'subscriptions/subscribe_link', subscribable: @question
+
+- if can_vote?(@question)
+  = render 'shared/vote', resource: @question
+
+- @question.files.each do |file|
+  p= link_to file.filename.to_s, url_for(file)
+
+- if can?(:create, Comment)
+  .add-comment-question
+    = render 'shared/add_comment_form', commentable: @question
+
+.question-comments
+  = render 'shared/comments_list', resource: @question
+
+.links
+  = render 'shared/links_list', resource: @question
+
+.answers
+  = render @question.answers
+
+- if can?(:create, Answer)
+  .add-answer
+    p Write answer to the question
+    = render 'questions/answer_form'
+- else
+    p
+      = link_to 'Log In', new_user_session_path
+      |  in order to write an answer
